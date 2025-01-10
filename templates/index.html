@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monitor Detak Jantung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .value {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Monitor Detak Jantung</h1>
+        <div class="value">Nilai Sensor: <span id="value">-</span></div>
+        <div class="value">Amplitudo: <span id="amplitude">-</span></div>
+        <div class="value">Kontak Sensor: <span id="kontak">-</span></div>
+        <div class="value">BPM: <span id="bpm">-</span></div>
+        <div class="value">Status: <span id="status">-</span></div>
+    </div>
+
+    <script>
+        function updateValues() {
+            fetch('/get_bpm')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('value').textContent = data.value;
+                    document.getElementById('amplitude').textContent = data.amplitude;
+                    document.getElementById('kontak').textContent = data.kontak;
+                    document.getElementById('bpm').textContent = data.bpm;
+                    document.getElementById('status').textContent = data.status;
+                });
+        }
+
+        // Update setiap 100ms
+        setInterval(updateValues, 100);
+    </script>
+</body>
+</html>
