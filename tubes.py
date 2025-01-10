@@ -44,15 +44,17 @@ def is_signal_valid(data_buffer, min_amplitude=1000):
     if len(data_buffer) < 10:
         return False
     
-    # Tambahkan pengecekan nilai minimum
-    if min(data_buffer) < 100:  # Nilai threshold ketika sensor dilepas
+    # Perketat pengecekan nilai minimum dan maksimum
+    if min(data_buffer) < 100 or max(data_buffer) > 20000:  # Tambah batas maksimum
         return False
     
     amplitude = np.ptp(data_buffer)
     std_dev = np.std(data_buffer)
     
     # Perketat persyaratan validasi
-    return amplitude > min_amplitude and std_dev > 100 and max(data_buffer) > 1000
+    return (amplitude > min_amplitude and amplitude < 15000 and  # Tambah batas amplitude maksimum
+            std_dev > 100 and std_dev < 5000 and  # Tambah batas std_dev
+            1000 < max(data_buffer) < 20000)  # Perketat range nilai valid
 
 def calculate_bpm(data_buffer, sampling_rate=50):
     if len(data_buffer) < sampling_rate:
@@ -124,9 +126,9 @@ def main():
         while True:
             value = read_adc()
             
-            # Tambahkan validasi nilai sensor
-            if value < 100:  # Nilai threshold ketika sensor dilepas
-                pulse_buffer.clear()  # Reset buffer
+            # Perketat validasi nilai sensor
+            if value < 100 or value > 20000:  # Tambah batas maksimum
+                pulse_buffer.clear()
                 last_valid_bpm = None
                 print(f"\rSensor terlepas | BPM: Tidak terdeteksi | Status: tidak terdeteksi", end="")
                 time.sleep(1/sampling_rate)
